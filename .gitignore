@@ -1,0 +1,4 @@
+venv/
+db_cerebro/
+__pycache__/
+.DS_Store
