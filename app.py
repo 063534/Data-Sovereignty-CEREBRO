@@ -1,11 +1,16 @@
 import streamlit as st
 import os
 import tempfile
+import audit_logger
 
 # Kendi yazdığımız backend motorunu projemize dahil ediyoruz
 from cerebro_brain import ask_cerebro 
 # YENİ: PDF işleme motorumuzu (Göz ve Hafıza) dahil ediyoruz
 from document_processor import process_and_save_pdf
+
+# CEREBRO başlarken Kara Kutu'yu (Audit Log) hazırla ve sisteme giriş yapıldığını kaydet
+audit_logger.init_db()
+audit_logger.log_kaydet("Aktif_Kullanici", "SISTEM_GIRIS", "CEREBRO ana arayüzü başlatıldı.")
 
 # --- 1. SAYFA AYARLARI ---
 st.set_page_config(page_title="Project CEREBRO", page_icon="🧠", layout="wide")
@@ -50,7 +55,6 @@ st.markdown("---")
 # --- 4. DİL SEÇİMİ VE PDF YÜKLEME (ANA EKRAN) ---
 # Ekranı iki eşit sütuna böldük ki dil seçimi ve PDF kutusu yan yana çok şık dursun
 col1, col2 = st.columns([1, 1]) 
-
 with col1:
     selected_language = st.selectbox(
         "🛠️ Analiz Edilecek Yazılım Dilini Seçin:",
@@ -61,19 +65,19 @@ with col2:
     # YENİ EKLENEN PDF YÜKLEME KUTUSU
     uploaded_file = st.file_uploader("📂 Kurumsal PDF / Log Dosyası Yükle (RAG Hafızası)", type=["pdf"])
     
-    # Eğer kullanıcı bir PDF yüklerse...
+    # Eğer kullanıcı bir PDF yüklerse... (SADECE BİR KERE YAZILACAK)
     if uploaded_file is not None:
         with st.spinner("PDF Yerel Hafızaya (ChromaDB) İşleniyor..."):
-            # Dosyayı geçici olarak M2 Mac'ine kaydet
             with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
                 tmp_file.write(uploaded_file.getvalue())
                 tmp_file_path = tmp_file.name
             
-            # Adım 2'de yazdığımız motoru çalıştırıp PDF'i hafızaya kazı!
             chunk_count = process_and_save_pdf(tmp_file_path)
             st.success(f"✅ DSGVO Uyumlu: Dosya dışarı sızmadan {chunk_count} parça halinde yerel hafızaya şifrelendi!")
+            
+            # YENİ EKLENEN KARA KUTU KAYDI:
+            audit_logger.log_kaydet("Aktif_Kullanici", "PDF_YUKLEME", f"'{uploaded_file.name}' sisteme şifrelendi.")
 
-st.markdown("---")
 
 # --- 5. SOHBET GEÇMİŞİ ---
 if "messages" not in st.session_state:
@@ -87,6 +91,9 @@ for msg in st.session_state.messages:
 
 # --- 6. SORU-CEVAP KISMI ---
 if prompt := st.chat_input("Hatalı kodu veya PDF ile ilgili sorunuzu buraya girin..."):
+    # YENİ EKLENEN KARA KUTU KAYDI:
+    audit_logger.log_kaydet("Aktif_Kullanici", "SORU_SORULDU", f"Soru: {prompt}")
+
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.chat_message("user", avatar="🧢").write(prompt)
 
