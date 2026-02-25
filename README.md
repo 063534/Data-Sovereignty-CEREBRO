@@ -1,43 +1,79 @@
-🧠 CEREBRO: Data Sovereignty & AI Ecosystem
-CEREBRO, modern işletmelerin en büyük sorunu olan veri sızıntısı riskine karşı, "Veri Egemenliği" (Data Sovereignty) ilkesiyle geliştirilmiş, %100 yerel (offline) çalışan bir yapay zeka ekosistemidir.   
+# 🧠 CEREBRO: Data Sovereignty & AI Ecosystem
 
-🛡️ Mimari Vizyon: Air-Gapped Güvenlik
-Bu sistem, buluta veri gönderen sıradan araçların aksine, internete tamamen kapalı (air-gapped) bir makinede çalışacak şekilde tasarlanmıştır.   
+**CEREBRO**, modern işletmelerin en büyük sorunu olan veri sızıntısı riskine karşı, **"Veri Egemenliği" (Data Sovereignty)** ilkesiyle geliştirilmiş, %100 yerel (offline) çalışan bir yapay zeka ekosistemidir.
 
-Gizlilik: Şirketin verisi, şirketin fiziksel sınırları içinde kalır.   
+## 🛡️ Mimari Vizyon: Air-Gapped Güvenlik
 
-Uyumluluk: Mimari, Avrupa GDPR (DSGVO) standartlarına %100 uyumlu olması için özel olarak yapılandırılmıştır.   
+Bu sistem, buluta veri gönderen sıradan araçların aksine, internete tamamen kapalı (**air-gapped**) bir makinede çalışacak şekilde tasarlanmıştır.
 
-⚙️ Çift Motorlu Veri Tabanı Mimarisi
-Sıradan bir veri tabanı kaydının ötesinde, sistem iki farklı "organ" ile çalışır:   
+* 
+**Gizlilik:** Şirketin verisi, şirketin fiziksel sınırları içinde kalır.
 
-Vektör Hafıza (ChromaDB): * RAG (Retrieval-Augmented Generation) mimarisi entegre edilmiştir.   
 
-Yüzlerce sayfalık PDF ve kurumsal raporları saniyeler içinde okuyup vektörlere (sayılara) çevirerek yerel hafızasına alır.   
+* 
+**Uyumluluk:** Mimari, Avrupa **GDPR (DSGVO)** standartlarına %100 uyumlu olması için özel olarak yapılandırılmıştır.
 
-Audit Log Kasası (SQLite - Kara Kutu): * Yapay zekadan bağımsız çalışan ilişkisel bir denetim kaydı sistemidir.   
 
-Hangi kullanıcının saat kaçta ne sorduğunu saniyesi saniyesine şifreli bir şekilde kaydeder.   
 
-📊 Çok Yönlü Yetenek: Veri Analizi ve Görselleştirme
-CEREBRO sadece bir sohbet arayüzü değil, aynı zamanda bir veri analistidir:   
+## ⚙️ Çift Motorlu Veri Tabanı Mimarisi
 
-Excel İşleme: Karmaşık Excel dosyalarını okuyup analiz edebilir.   
+Sıradan bir veri tabanı kaydının ötesinde, sistem iki farklı "organ" ile çalışır:
 
-Görselleştirme: Verileri anında kurumsal grafiklere dönüştürerek temiz bir Streamlit arayüzüyle sunar.   
+1. 
+**Vektör Hafıza (ChromaDB):** * **RAG (Retrieval-Augmented Generation)** mimarisi entegre edilmiştir.
 
-📂 Teknik Standartlar
-Modüler Yapı: Proje; app.py, audit_logger.py ve hafıza modülleri gibi parçalara ayrılarak Temiz Kod (Clean Code) prensipleriyle yazılmıştır.   
 
-Versiyon Kontrolü: Tüm geliştirme süreci Git sistemiyle profesyonel iş akışlarına uygun yönetilmektedir.   
+* Yüzlerce sayfalık PDF ve kurumsal raporları saniyeler içinde okuyup vektörlere (sayılara) çevirerek yerel hafızasına alır.
 
-🚀 Kurulum ve Çalıştırma
 
-Gerekli kütüphaneleri yükleyin:
 
-Bash
+
+2. 
+**Audit Log Kasası (SQLite - Kara Kutu):** * Yapay zekadan bağımsız çalışan ilişkisel bir denetim kaydı sistemidir.
+
+
+* Hangi kullanıcının saat kaçta ne sorduğunu saniyesi saniyesine şifreli bir şekilde kaydeder.
+
+
+
+
+
+## 📊 Çok Yönlü Yetenek: Veri Analizi ve Görselleştirme
+
+CEREBRO sadece bir sohbet arayüzü değil, aynı zamanda bir veri analistidir:
+
+* 
+**Excel İşleme:** Karmaşık Excel dosyalarını okuyup analiz edebilir.
+
+
+* 
+**Görselleştirme:** Verileri anında kurumsal grafiklere dönüştürerek temiz bir **Streamlit** arayüzüyle sunar.
+
+
+
+## 📂 Teknik Standartlar
+
+* **Modüler Yapı:** Proje; `app.py`, `audit_logger.py` ve hafıza modülleri gibi parçalara ayrılarak **Temiz Kod (Clean Code)** prensipleriyle yazılmıştır.
+
+
+* 
+**Versiyon Kontrolü:** Tüm geliştirme süreci **Git** sistemiyle profesyonel iş akışlarına uygun yönetilmektedir.
+
+
+
+---
+
+### 🚀 Kurulum ve Çalıştırma
+
+1. Gerekli kütüphaneleri yükleyin:
+```bash
 pip install -r requirements.txt
-Sistemi başlatın:
 
-Bash
+```
+
+
+2. Sistemi başlatın:
+```bash
 streamlit run app.py
+
+...
