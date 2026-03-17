@@ -5,6 +5,28 @@ import audit_logger
 import pandas as pd
 import privacy_guard as pg  
 import bi_analyser as bi    
+import localization
+import api_connector  
+import forecasting    
+import time
+
+# --- 1. SAYFA AYARLARI (Streamlit kuralı gereği en başta olmalı) ---
+st.set_page_config(page_title="Project CEREBRO", page_icon="🧠", layout="wide")
+
+# Dil Ayarları
+selected_lang = st.sidebar.selectbox("Dil / Language", ["TR", "EN", "DE"])
+lang_pack = localization.get_text(selected_lang)
+st.title(lang_pack["title"])
+
+# --- YAN MENÜ (SIDEBAR) EKLEMELERİ ---
+st.sidebar.markdown("---") 
+st.sidebar.subheader("🔌 Kurumsal Entegrasyon")
+
+if st.sidebar.button("SAP/ERP Canlı Veri Çek"):
+    with st.spinner("Kurumsal sunucuya bağlanılıyor..."):
+        live_df = api_connector.fetch_live_data("SAP")
+        st.sidebar.success("Bağlantı Başarılı!")
+        st.sidebar.table(live_df)
 
 # Backend motorları
 from cerebro_brain import ask_cerebro 
@@ -13,9 +35,6 @@ from document_processor import process_and_save_pdf
 # Sistemi Başlat
 audit_logger.init_db()
 audit_logger.log_kaydet("Aktif_Kullanici", "SISTEM_GIRIS", "CEREBRO v2.0 Başlatıldı.")
-
-# --- 1. SAYFA AYARLARI ---
-st.set_page_config(page_title="Project CEREBRO", page_icon="🧠", layout="wide")
 
 # --- 2. YAN MENÜ (SOL PANEL) ---
 with st.sidebar:
@@ -35,7 +54,6 @@ with st.sidebar:
     st.warning("🧠 Engine: M2 Neural Core")
     
     st.markdown("---")
-    
     st.markdown("""<div style="text-align: center;"><br><i>"Hayatta en hakiki mürşit ilimdir."</i><br><br></div>""", unsafe_allow_html=True)
     if os.path.exists("imza.png"):
         st.image("imza.png", use_container_width=True)
@@ -70,21 +88,25 @@ with tab1:
 with tab2:
     st.markdown("### 📊 CEREBRO Business Intelligence & Trend Analysis")
     
-    # 🎨 TEMA SEÇİCİ (Frontend Şovu)
-    tema = st.selectbox("🎨 Sistem Arayüz Teması:", ["Klasik Karanlık", "Matrix Green", "Hawkins Red", "Light Mode"])
+    tema = st.selectbox("🎨 Sistem Arayüz Teması:", ["Klasik Karanlık", "Matrix Green", "Hawkins Red", "Light Mode"], key="tema_secici_v25")
+    
     if tema == "Matrix Green":
-        st.markdown("<style>body { color: #00FF00 !important; } .stApp { background-color: #000; }</style>", unsafe_allow_html=True)
+        st.markdown("<style> .stApp { background-color: #000000; color: #00FF00 !important; } </style>", unsafe_allow_html=True)
+    elif tema == "Hawkins Red":
+        st.markdown("<style> .stApp { background-color: #1a0000; color: #FF0000 !important; } </style>", unsafe_allow_html=True)
+    elif tema == "Light Mode":
+        # Tüm özel CSS'leri sıfırlayıp Streamlit'in kendi aydınlık moduna bırakıyoruz
+        st.markdown("<style> .stApp { background-color: #FFFFFF; color: #31333F !important; } </style>", unsafe_allow_html=True)
+        st.info("💡 Not: En iyi görüntü için Streamlit sağ üst menüden 'Settings > Theme > Light' yapabilirsiniz.")
     elif tema == "Hawkins Red":
         st.markdown("<style>body { color: #FF0000 !important; } .stApp { background-color: #1a0000; }</style>", unsafe_allow_html=True)
 
-    # 🔑 YETKİ PANELİ
     st.info("🔒 Güvenli Mod: Hassas verilere erişim için yetki doğrulaması gereklidir.")
     c_l, c_s = st.columns([1, 2])
     with c_l:
         sifre_input = st.text_input("🔑 Erişim Şifresi:", type="password", key="bi_pass")
     is_authorized = (sifre_input == "12345")
 
-    # 📂 ÇOKLU DOSYA YÜKLEME (Trend Analizi)
     yuklenen_dosyalar = st.file_uploader("📂 Dosyaları Seçin (Trend analizi için 2 dosya yükleyebilirsiniz)", type=['xlsx', 'csv'], accept_multiple_files=True)
     
     if yuklenen_dosyalar:
@@ -94,8 +116,11 @@ with tab2:
             dfs.append(pg.mask_dataframe(df_temp.copy(), authorized=is_authorized))
         
         df = dfs[0]
+        
         if is_authorized:
-            st.balloons()
+            with st.spinner('Analiz motoru optimize ediliyor...'):
+                time.sleep(1)
+            st.info("📊 Analiz Raporu Hazır.")
             st.success("🔓 YETKİLİ ERİŞİM: Veriler orijinal haliyle açıldı.")
         else:
             st.warning("⚠️ GÜVENLİ MOD: Hassas veriler maskelenmiştir.")
@@ -112,7 +137,7 @@ with tab2:
         else:
             st.dataframe(df.head(10), use_container_width=True)
 
-        # 📈 GRAFİKLER
+        # 📈 GRAFİKLER VE TAHMİNLEME
         st.markdown("---")
         st.subheader("📈 Analitik Görselleştirme")
         g1, g2, g3 = st.columns(3)
@@ -128,7 +153,6 @@ with tab2:
         if fig:
             st.plotly_chart(fig, use_container_width=True, key=f"bi_chart_{secilen}")
             
-            # 🧠 AI ANALİZ ET BUTONU (Executive Summary)
             if st.button("🧠 CEREBRO: Grafiği ve Veriyi Analiz Et"):
                 with st.spinner("AI Yönetici Özeti Hazırlanıyor..."):
                     ozet_veri = df.describe().to_string()
@@ -138,7 +162,18 @@ with tab2:
                     st.info(ai_cevap)
                     audit_logger.log_kaydet("Aktif_Kullanici", "AI_ANALIZ", f"{secilen} grafiği yorumlatıldı.")
 
-# --- 5. SOHBET GEÇMİŞİ (ALT KISIMDA KALMALI) ---
+        # --- TAHMİNLEME EKLEMESİ ---
+        st.markdown("---")
+        st.subheader("🧠 CEREBRO AI: Gelecek Çeyrek Projeksiyonu")
+        numeric_cols = df.select_dtypes(include=['number']).columns
+        if len(numeric_cols) > 0:
+            target_col = numeric_cols[0]
+            prediction = forecasting.predict_next_quarter(df, target_col)
+            col1, col2 = st.columns(2)
+            col1.metric(label=f"Mevcut Ortalama ({target_col})", value=round(df[target_col].mean(), 2))
+            col2.metric(label="AI Gelecek Tahmini (+%10)", value=prediction, delta="Büyüme Bekleniyor")
+
+# --- 5. SOHBET GEÇMİŞİ ---
 st.markdown("---")
 if "messages" not in st.session_state:
     st.session_state["messages"] = [{"role": "assistant", "content": "Cerebro aktif. Bilimin ışığında analize hazırım."}]
@@ -160,4 +195,3 @@ if prompt := st.chat_input("Mesajınızı buraya girin..."):
                 st.session_state.messages.append({"role": "assistant", "content": full_response})
             except Exception as e:
                 st.error(f"Hata: {e}")
-                
