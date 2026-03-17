@@ -2,20 +2,22 @@ import streamlit as st
 import os
 import tempfile
 import audit_logger
+import pandas as pd
+import privacy_guard as pg  
+import bi_analyser as bi    
 
-# Kendi yazdığımız backend motorunu projemize dahil ediyoruz
+# Backend motorları
 from cerebro_brain import ask_cerebro 
-# YENİ: PDF işleme motorumuzu (Göz ve Hafıza) dahil ediyoruz
 from document_processor import process_and_save_pdf
 
-# CEREBRO başlarken Kara Kutu'yu (Audit Log) hazırla ve sisteme giriş yapıldığını kaydet
+# Sistemi Başlat
 audit_logger.init_db()
-audit_logger.log_kaydet("Aktif_Kullanici", "SISTEM_GIRIS", "CEREBRO ana arayüzü başlatıldı.")
+audit_logger.log_kaydet("Aktif_Kullanici", "SISTEM_GIRIS", "CEREBRO v2.0 Başlatıldı.")
 
 # --- 1. SAYFA AYARLARI ---
 st.set_page_config(page_title="Project CEREBRO", page_icon="🧠", layout="wide")
 
-# --- 2. YAN MENÜ (SOL PANEL - SADE VE ŞIK) ---
+# --- 2. YAN MENÜ (SOL PANEL) ---
 with st.sidebar:
     if os.path.exists("neon_logo.png"):
         st.image("neon_logo.png", width=140)
@@ -23,14 +25,14 @@ with st.sidebar:
         st.image("https://cdn-icons-png.flaticon.com/512/6356/6356649.png", width=120)
     
     st.title("Project CEREBRO")
-    st.caption("Architect: Betül Sıla Köroğlu") # <-- İMZAN KORUNDU
+    st.caption("Architect: Betül Sıla Köroğlu")
     st.markdown("---")
     
     st.write("**Hawkins Lab Status:**")
     st.success("🟢 System: ONLINE")
     st.error("🚫 Internet: OFFLINE") 
     st.info("🔒 Gate: CLOSED (Air-Gapped)")
-    st.warning("🧠 Engine: M2 Neural Core") # <-- M2 VURGUSU KORUNDU
+    st.warning("🧠 Engine: M2 Neural Core")
     
     st.markdown("---")
     
@@ -41,68 +43,121 @@ with st.sidebar:
         st.markdown("<h3 style='text-align: center; font-family: Brush Script MT, cursive;'>K. Atatürk</h3>", unsafe_allow_html=True)
     st.markdown("""<div style="text-align: center;"><small>Cumhuriyet'in İzinde, Bilimin Işığında.</small></div>""", unsafe_allow_html=True)
 
-# --- 3. ANA EKRAN ---
+# --- 3. ANA EKRAN BAŞLIK ---
 st.title("🧠 Project CEREBRO: Enterprise AI Node")
-st.markdown("""
-### *"Friends Don't Lie. Data Doesn't Leak to the Upside Down."*
-*(Arkadaşlar yalan söylemez. Veri, Ters Dünya'ya [Buluta] sızmaz.)*
+st.markdown("""### *"Friends Don't Lie. Data Doesn't Leak to the Upside Down."*""")
 
-Bu sistem, **Mimar Betül Sıla Köroğlu** tarafından geliştirilen; kurumsal ve endüstriyel veri güvenliği için **"Veri Egemenliği" (Data Sovereignty)** ilkesine dayalı çalışan yerel yapay zeka mimarisidir.
-""") # <-- VİZYONUN KORUNDU
+# --- 4. SEKMELER ---
+tab1, tab2 = st.tabs(["📄 PDF & Chat Analiz", "📊 BI & Trend Analizi (Elite)"])
 
-st.markdown("---") 
+# --- TAB 1: PDF ANALİZ ---
+with tab1:
+    col1, col2 = st.columns(2)
+    with col1:
+        selected_language = st.selectbox("🛠️ Analiz Dilini Seçin:", ["Otomatik Algıla", "Python", "Java", "C#", "SQL", "JavaScript"])
+    with col2:
+        uploaded_pdf = st.file_uploader("📂 PDF / Log Yükle (RAG Hafızası)", type=["pdf"])
+        if uploaded_pdf:
+            with st.spinner("İşleniyor..."):
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+                    tmp.write(uploaded_pdf.getvalue())
+                    tmp_path = tmp.name
+                chunk_count = process_and_save_pdf(tmp_path)
+                st.success(f"✅ Şifrelendi: {chunk_count} parça hafızaya alındı!")
+                audit_logger.log_kaydet("Aktif_Kullanici", "PDF_YUKLEME", f"'{uploaded_pdf.name}'")
 
-# --- 4. DİL SEÇİMİ VE PDF YÜKLEME (ANA EKRAN) ---
-# Ekranı iki eşit sütuna böldük ki dil seçimi ve PDF kutusu yan yana çok şık dursun
-col1, col2 = st.columns([1, 1]) 
-with col1:
-    selected_language = st.selectbox(
-        "🛠️ Analiz Edilecek Yazılım Dilini Seçin:",
-        ["Otomatik Algıla (Auto)", "C#", "Java", "Python", "JavaScript", "React", "HTML / CSS / Bootstrap", "SQL", "C / C++", "Swift", "Diğer"]
-    )
-
-with col2:
-    # YENİ EKLENEN PDF YÜKLEME KUTUSU
-    uploaded_file = st.file_uploader("📂 Kurumsal PDF / Log Dosyası Yükle (RAG Hafızası)", type=["pdf"])
+# --- TAB 2: BI, TREND VE AI ANALİZ ---
+with tab2:
+    st.markdown("### 📊 CEREBRO Business Intelligence & Trend Analysis")
     
-    # Eğer kullanıcı bir PDF yüklerse... (SADECE BİR KERE YAZILACAK)
-    if uploaded_file is not None:
-        with st.spinner("PDF Yerel Hafızaya (ChromaDB) İşleniyor..."):
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
-                tmp_file.write(uploaded_file.getvalue())
-                tmp_file_path = tmp_file.name
-            
-            chunk_count = process_and_save_pdf(tmp_file_path)
-            st.success(f"✅ DSGVO Uyumlu: Dosya dışarı sızmadan {chunk_count} parça halinde yerel hafızaya şifrelendi!")
-            
-            # YENİ EKLENEN KARA KUTU KAYDI:
-            audit_logger.log_kaydet("Aktif_Kullanici", "PDF_YUKLEME", f"'{uploaded_file.name}' sisteme şifrelendi.")
+    # 🎨 TEMA SEÇİCİ (Frontend Şovu)
+    tema = st.selectbox("🎨 Sistem Arayüz Teması:", ["Klasik Karanlık", "Matrix Green", "Hawkins Red", "Light Mode"])
+    if tema == "Matrix Green":
+        st.markdown("<style>body { color: #00FF00 !important; } .stApp { background-color: #000; }</style>", unsafe_allow_html=True)
+    elif tema == "Hawkins Red":
+        st.markdown("<style>body { color: #FF0000 !important; } .stApp { background-color: #1a0000; }</style>", unsafe_allow_html=True)
 
+    # 🔑 YETKİ PANELİ
+    st.info("🔒 Güvenli Mod: Hassas verilere erişim için yetki doğrulaması gereklidir.")
+    c_l, c_s = st.columns([1, 2])
+    with c_l:
+        sifre_input = st.text_input("🔑 Erişim Şifresi:", type="password", key="bi_pass")
+    is_authorized = (sifre_input == "12345")
 
-# --- 5. SOHBET GEÇMİŞİ ---
+    # 📂 ÇOKLU DOSYA YÜKLEME (Trend Analizi)
+    yuklenen_dosyalar = st.file_uploader("📂 Dosyaları Seçin (Trend analizi için 2 dosya yükleyebilirsiniz)", type=['xlsx', 'csv'], accept_multiple_files=True)
+    
+    if yuklenen_dosyalar:
+        dfs = []
+        for dosya in yuklenen_dosyalar:
+            df_temp = pd.read_csv(dosya) if dosya.name.endswith('.csv') else pd.read_excel(dosya)
+            dfs.append(pg.mask_dataframe(df_temp.copy(), authorized=is_authorized))
+        
+        df = dfs[0]
+        if is_authorized:
+            st.balloons()
+            st.success("🔓 YETKİLİ ERİŞİM: Veriler orijinal haliyle açıldı.")
+        else:
+            st.warning("⚠️ GÜVENLİ MOD: Hassas veriler maskelenmiştir.")
+
+        if len(dfs) > 1:
+            st.success(f"📈 Trend Analizi: {len(dfs)} dosya karşılaştırılıyor.")
+            c1_d, c2_d = st.columns(2)
+            with c1_d:
+                st.write(f"📁 1. Dosya: {yuklenen_dosyalar[0].name}")
+                st.dataframe(dfs[0].head(10))
+            with c2_d:
+                st.write(f"📁 2. Dosya: {yuklenen_dosyalar[1].name}")
+                st.dataframe(dfs[1].head(10))
+        else:
+            st.dataframe(df.head(10), use_container_width=True)
+
+        # 📈 GRAFİKLER
+        st.markdown("---")
+        st.subheader("📈 Analitik Görselleştirme")
+        g1, g2, g3 = st.columns(3)
+        with g1:
+            grafik_list = ["Bar", "Line", "Pie", "Radar", "Ağaç Haritası (Treemap)", "Güneş Işığı (Sunburst)"]
+            secilen = st.selectbox("Grafik Türü Seç:", grafik_list)
+        with g2:
+            x_eks = st.selectbox("X Ekseni:", df.columns)
+        with g3:
+            y_eks = st.selectbox("Y Ekseni:", df.columns)
+
+        fig = bi.ciz_grafik(df, secilen, x_eks, y_eks)
+        if fig:
+            st.plotly_chart(fig, use_container_width=True, key=f"bi_chart_{secilen}")
+            
+            # 🧠 AI ANALİZ ET BUTONU (Executive Summary)
+            if st.button("🧠 CEREBRO: Grafiği ve Veriyi Analiz Et"):
+                with st.spinner("AI Yönetici Özeti Hazırlanıyor..."):
+                    ozet_veri = df.describe().to_string()
+                    analiz_sorusu = f"Aşağıdaki verilerin özet istatistiklerine ve {secilen} grafiğine bakarak profesyonel bir yönetici özeti yaz. Trendleri belirt ve tavsiyelerde bulun: \n{ozet_veri}"
+                    ai_cevap = ask_cerebro(analiz_sorusu, "Türkçe")
+                    st.markdown("#### 📝 CEREBRO Yönetici Analizi")
+                    st.info(ai_cevap)
+                    audit_logger.log_kaydet("Aktif_Kullanici", "AI_ANALIZ", f"{secilen} grafiği yorumlatıldı.")
+
+# --- 5. SOHBET GEÇMİŞİ (ALT KISIMDA KALMALI) ---
+st.markdown("---")
 if "messages" not in st.session_state:
-    st.session_state["messages"] = [{"role": "assistant", "content": "Cerebro aktif. Verileriniz Upside Down'dan (Buluttan) korunuyor. Bilimin ışığında analize hazırım."}]
+    st.session_state["messages"] = [{"role": "assistant", "content": "Cerebro aktif. Bilimin ışığında analize hazırım."}]
 
 for msg in st.session_state.messages:
-    if msg["role"] == "user":
-        st.chat_message("user", avatar="🧢").write(msg["content"]) 
-    else:
-        st.chat_message("assistant", avatar="🧠").write(msg["content"]) 
+    avatar = "🧢" if msg["role"] == "user" else "🧠"
+    st.chat_message(msg["role"], avatar=avatar).write(msg["content"])
 
-# --- 6. SORU-CEVAP KISMI ---
-if prompt := st.chat_input("Hatalı kodu veya PDF ile ilgili sorunuzu buraya girin..."):
-    # YENİ EKLENEN KARA KUTU KAYDI:
+if prompt := st.chat_input("Mesajınızı buraya girin..."):
     audit_logger.log_kaydet("Aktif_Kullanici", "SORU_SORULDU", f"Soru: {prompt}")
-
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.chat_message("user", avatar="🧢").write(prompt)
 
     with st.chat_message("assistant", avatar="🧠"):
-        with st.spinner(f"Analyzing in Secure Mode ({selected_language})..."):
+        with st.spinner("Analyzing..."):
             try:
                 full_response = ask_cerebro(prompt, selected_language)
                 st.write(full_response)
                 st.session_state.messages.append({"role": "assistant", "content": full_response})
             except Exception as e:
-                st.error("⚠️ Mind Flayer Saldırısı! (Model Bağlantı Hatası)")
-                st.info("Lütfen terminalden 'ollama run llama3' komutunu çalıştırın.")
+                st.error(f"Hata: {e}")
+                

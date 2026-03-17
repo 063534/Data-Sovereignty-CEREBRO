@@ -1,4 +1,7 @@
-venv/
-db_cerebro/
 __pycache__/
-.DS_Store
+*.db
+*.log
+venv/
+.env
+*.xlsx
+*.csv
