@@ -1,46 +1,53 @@
-# 🛡️ Data Sovereignty: CEREBRO v2.5 - Autonomous AI Node
+# 🛡️ Data Sovereignty: CEREBRO v3.1
+### *Local Enterprise Intelligence & Automated Data Analysis*
 
-> **"Your Data, Your Rules. The Future of Secure Enterprise Intelligence."**
-
-## 🌍 Proje Vizyonu (Vision)
-Günümüz kurumsal dünyasında, veri gizliliği ve KVKK/GDPR uyumluluğu en kritik sorundur. **CEREBRO**, şirketlerin hassas verilerini buluta göndermeden, tamamen yerel (On-Premise) ve izole bir ortamda Yapay Zeka ile analiz etmesini sağlayan bir **"Offline Inference"** sistemidir.
-
-## 🚀 Temel Özellikler (Key Features)
-* **Tamamen Çevrimdışı (Air-Gapped Ready):** İnternet bağlantısı olmadan çalışır. Veri sızıntısı riski %0'dır.
-* **GDPR & KVKK Uyumlu:** Veriler asla bilgisayarınızdan dışarı çıkmaz.
-* **RAG Mimarisi:** Halüsinasyonları önlemek için vektör tabanlı doğrulama sistemi kullanır.
-* **Donanım Hızlandırma:** Apple Silicon (M2) üzerinde optimize edilmiştir.
+**CEREBRO**, kurumsal veri gizliliğini odak noktasına alan, tamamen yerel sunucularda çalışan bir yapay zeka düğümüdür. Veriyi dış dünyaya açmadan, şirket içi izole bir ortamda (On-Premise) yüksek performanslı veri analitiği ve denetimi sunar.
 
 ---
 
-## 🏛️ Gelişmiş Kurumsal Modüller (Advanced Enterprise Modules - v2.5)
+## 🚀 Öne Çıkan Yetenekler (Key Capabilities)
 
-### 1. 🛡️ Privacy Guard Engine (Veri Maskeleme)
-* **Hassas Veri Tespiti:** PII (İsim, Telefon, Maaş vb.) verilerini otomatik tespit eder.
-* **Yetki Kontrolü:** Yetkisiz erişimlerde veriyi **[🔒 MASKELENMİŞ]** hale getirir.
+### 📈 Otonom Veri Denetimi & Anomali Tespiti
+Veri setlerindeki hataları ve istatistiksel sapmaları insan müdahalesi olmadan saniyeler içinde analiz eder.
+* **Outlier Analysis:** Sayısal verilerdeki olağandışı dalgalanmaları (Z-Score) tespit ederek rapor güvenliğini sağlar.
+* **Veri Kalite Kontrolü:** Eksik veya hatalı girişleri otomatik izole eder.
 
-### 2. 🌐 Multi-Language Support (Küresel Operasyon)
+### 🔮 İleri Seviye Tahminleme Modülü (Predictive Analytics)
+Geçmiş verileri baz alarak gelecek dönemler için matematiksel projeksiyonlar oluşturur.
+* **Trend Analizi:** Verideki büyüme veya azalma eğilimlerini hesaplar.
+* **Stratejik Öngörü:** Regresyon modelleriyle bir sonraki çeyrek için olası değerleri tahmin eder.
+
+### 🔐 Veri Güvenliği & Maskeleme (Privacy Guard)
+"Veri Egemenliği" ilkesini her aşamada tavizsiz uygular.
+* **PII Maskeleme:** Kişisel verileri (İsim, Telefon vb.) yetki bazlı olarak otomatik gizler.
+* **Offline Inference:** İnternet bağlantısı gerektirmez; veri asla donanımdan dışarı çıkmaz.
+
+### 🌐 Çok Dilli Destek & Raporlama
 * **Localization:** Tek tuşla **Türkçe, İngilizce ve Almanca** arayüz desteği.
-
-### 3. 🔌 Enterprise API Connector (Canlı Veri Akışı)
-* **SAP/ERP Integration:** Kurumsal sistemlerden (SAP, Salesforce vb.) canlı veri çekme altyapısı simülasyonu.
-
-### 4. 🧠 AI Forecasting & Trend Analysis (Gelecek Tahminleme)
-* **Predictive Analytics:** Geçmiş verileri analiz ederek gelecek çeyrek için büyüme projeksiyonları oluşturur.
+* **Reporting:** Analiz sonuçlarını kurumsal formatta profesyonel **PDF** dosyasına dönüştürür.
 
 ---
 
 ## 🛠️ Teknoloji Yığını (Tech Stack)
 | Bileşen | Teknoloji | Görevi |
 | :--- | :--- | :--- |
-| **LLM Engine** | `Ollama` (Llama-3) | Yerel Yapay Zeka Motoru |
+| **LLM Engine** | `Ollama` (Llama-3) | Yerel Dil Modeli İşleme |
+| **Analysis** | `Scikit-learn / NumPy` | Tahminleme ve İstatistiksel Analiz |
+| **Frontend** | `Streamlit` | Kurumsal Dashboard ve Arayüz |
 | **Vector DB** | `ChromaDB` | Anlamsal Arama Hafızası |
-| **Frontend** | `Streamlit` | Profesyonel Kullanıcı Arayüzü |
-| **Localization** | `Custom Module` | Çok Dilli Dil Paketi Modülü |
+| **Hardware** | `Apple Silicon M2` | GPU Hızlandırmalı Lokal İşleme |
 
 ---
 
 ## 🗺️ Stratejik Yol Haritası (Roadmap)
-* **v2.6:** Excel dosyalarından otomatik PDF rapor üretme modülü.
-* **v2.7:** Veri tabanı bağlantıları için SQL Connector entegrasyonu.
-* **v3.0:** Tamamen otonom veri temizleme ve anomali tespiti motoru.
+
+### 🏗️ Planlanan Geliştirmeler
+* **v3.2 - Multimodal Etkileşim:** Sesli komut desteği ve görsel veri (OCR) analizi yetenekleri.
+* **v3.5 - SQL Connector:** Canlı veri tabanlarına doğrudan güvenli bağlantı altyapısı.
+* **v4.0 - Kurumsal Yetkilendirme:** Departman bazlı çoklu kullanıcı erişim kontrolü (RBAC).
+
+---
+
+## 👩‍💻 Geliştirici
+**Betül Sıla Köroğlu** *Computer Programmer & Data Security Researcher*
+
