@@ -10,6 +10,7 @@ import api_connector
 import forecasting    
 import time
 import report_gen
+import numpy as np
 import anomaly_engine  # .py silindi, doğru import bu
 from cerebro_brain import ask_cerebro 
 from document_processor import process_and_save_pdf
@@ -69,14 +70,15 @@ if "messages" not in st.session_state:
     st.session_state["messages"] = [{"role": "assistant", "content": "Merhaba! Benim adım CEREBRO, sen korumsal bir asistan. Otomatik algıyla analiz yeteneğim var. Ne konuda yardımcı olabilirsem, lütfen sorun."}]
 
 # --- ANA EKRAN SEKME TANIMLARI ---
-tab1, tab2, tab3 = st.tabs(["📄 PDF & Chat Analiz", "📊 BI & Trend Analizi (Elite)", "📜 Analiz Arşivi"])
+tab1, tab2, tab3, = st.tabs(["📄 PDF & Chat Analiz", "📊 BI & Trend Analizi (Elite)", "📜 Analiz Arşivi"])
 
 # --- TAB 1: PDF ANALİZ ---
 with tab1:
     col1, col2 = st.columns(2)
     with col1:
-        selected_language = st.selectbox("🛠️ Analiz Dilini Seçin:", ["Otomatik Algıla", "Python", "Java", "C#", "SQL", "JavaScript"])
-    with col2:
+        coding_languages = ["Otomatik Algıla", "Python", "Java", "C#", "SQL", "JavaScript", "C++", "Go", "Swift", "PHP", "Ruby", "Rust", "HTML/CSS"]
+        selected_lang = st.selectbox("Analiz Dilini Seçin:", coding_languages)
+with col2:
         uploaded_pdf = st.file_uploader("📂 PDF / Log Yükle (RAG Hafızası)", type=["pdf"])
         if uploaded_pdf:
             with st.spinner("İşleniyor..."):
